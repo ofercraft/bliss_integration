@@ -1,0 +1,18 @@
+{
+    "domain": "bliss",
+    "name": "Bliss Blinds",
+    "bluetooth": [
+        {
+            "connectable": true,
+            "service_uuid": "00001910-0000-1000-8000-00805f9b34fb"
+        }
+    ],
+    "codeowners": ["@donandren"],
+    "config_flow": true,
+    "dependencies": ["bluetooth"],
+    "documentation": "https://github.com/donandren/bliss_integration",
+    "iot_class": "local_polling",
+    "issue_tracker": "https://github.com/donandren/bliss_integration/issues",
+    "requirements": [],
+    "version": "0.2.0"
+}

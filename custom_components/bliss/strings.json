@@ -1,0 +1,82 @@
+{
+    "title": "Bliss Blinds",
+    "config": {
+        "step": {
+            "add_device": {
+                "title": "Bliss Blinds: Add blind",
+                "description": "Provide the details for the blind you want to add.",
+                "data": {
+                    "name": "Name",
+                    "mac": "MAC Address",
+                    "password": "Password",
+                    "range_max": "Travel range"
+                }
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to the blind. Make sure it is powered and in range."
+        },
+        "abort": {
+            "add_success": "Blind {dev_name} added",
+            "device_already_configured": "This blind is already configured"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Bliss Blinds configuration",
+                "description": "Select an action.",
+                "data": {
+                    "action": "Action"
+                }
+            },
+            "add_device": {
+                "title": "Bliss Blinds: Add blind",
+                "description": "Provide the details for the blind you want to add.",
+                "data": {
+                    "name": "Name",
+                    "mac": "MAC Address",
+                    "password": "Password",
+                    "range_max": "Travel range"
+                }
+            },
+            "select_edit_device": {
+                "title": "Bliss Blinds: Edit blind",
+                "description": "Select the blind to edit.",
+                "data": {}
+            },
+            "edit_device": {
+                "title": "Bliss Blinds: Edit blind",
+                "description": "Update the settings for {dev_name}.",
+                "data": {
+                    "name": "Name",
+                    "password": "Password",
+                    "range_max": "Travel range"
+                }
+            },
+            "remove_device": {
+                "title": "Bliss Blinds: Remove blind",
+                "description": "Choose the blind to remove.",
+                "data": {}
+            }
+        },
+        "error": {
+            "cannot_connect": "Failed to connect to the blind. Make sure it is powered and in range."
+        },
+        "abort": {
+            "add_success": "Blind {dev_name} added",
+            "device_already_configured": "This blind is already configured",
+            "edit_success": "Blind {dev_name} updated",
+            "remove_success": "Blind {dev_name} removed"
+        }
+    },
+    "selector": {
+        "action": {
+            "options": {
+                "add_device": "Add blind",
+                "edit_device": "Edit blind",
+                "remove_device": "Remove blind"
+            }
+        }
+    }
+}
