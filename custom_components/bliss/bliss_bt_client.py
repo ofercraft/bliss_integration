@@ -112,12 +112,6 @@ class BlissBlindClient:
         self._bt_client = BleakClient(self._ble_device)
         try:
             await self._bt_client.connect()
-            # Ensure the Bluetooth stack resolves services before we attempt
-            # to interact with the blind. BlueZ occasionally reports a
-            # successful connection while the characteristic cache is still
-            # empty, which leads to sporadic "Characteristic ... was not
-            # found" errors when we try to subscribe or write immediately.
-            await self._bt_client.get_services()
         except BleakError as err:
             self._bt_client = None
             raise err
