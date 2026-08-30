@@ -7,7 +7,7 @@ import re
 from homeassistant.const import Platform
 
 DOMAIN: str = "bliss"
-PLATFORMS = [Platform.COVER]
+PLATFORMS = [Platform.COVER, Platform.SENSOR]
 
 CONF_NAME = "name"
 CONF_MAC = "mac"

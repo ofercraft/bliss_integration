@@ -33,7 +33,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class BlissCoverEntity(BlissBaseEntity, CoverEntity):
     _attr_supported_features = (
-        CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.SET_POSITION
+        CoverEntityFeature.OPEN
+        | CoverEntityFeature.CLOSE
+        | CoverEntityFeature.STOP
+        | CoverEntityFeature.SET_POSITION
     )
 
     def __init__(
@@ -64,6 +67,10 @@ class BlissCoverEntity(BlissBaseEntity, CoverEntity):
     async def async_close_cover(self, **kwargs: Any) -> None:
         LOGGER.debug("Closing Bliss blind %s", self.coordinator.address)
         await self.coordinator.async_close()
+
+    async def async_stop_cover(self, **kwargs: Any) -> None:
+        LOGGER.debug("Stopping Bliss blind %s", self.coordinator.address)
+        await self.coordinator.async_stop()
 
     async def async_set_cover_position(self, **kwargs: Any) -> None:
         if ATTR_POSITION not in kwargs:

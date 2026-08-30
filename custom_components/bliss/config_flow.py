@@ -44,7 +44,6 @@ class BlissConfigFlowHandler(ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         self.device_data = DEVICE_DATA.copy()
-        self.config_entry: ConfigEntry | None = None
 
     @staticmethod
     def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
@@ -109,7 +108,7 @@ class BlissConfigFlowHandler(ConfigFlow, domain=DOMAIN):
                 int(user_input[CONF_RANGE_MAX]),
             )
             try:
-                await client.ensure_connected()
+                await client.refresh_status()
                 await client.disconnect()
             except Exception:
                 errors["base"] = "cannot_connect"
@@ -147,7 +146,7 @@ class BlissConfigFlowHandler(ConfigFlow, domain=DOMAIN):
 
 class BlissOptionsFlowHandler(OptionsFlow):
     def __init__(self, config_entry: ConfigEntry) -> None:
-        self.config_entry = config_entry
+        self._config_entry = config_entry
         self.selected_device: str | None = None
         self.device_data = DEVICE_DATA.copy()
 
@@ -164,7 +163,7 @@ class BlissOptionsFlowHandler(OptionsFlow):
         return self.async_show_form(step_id="init", data_schema=CONFIGURE_SCHEMA)
 
     def _device_exists(self, mac: str) -> bool:
-        return mac in self.config_entry.data.get(CONF_DEVICES, {})
+        return mac in self._config_entry.data.get(CONF_DEVICES, {})
 
     async def async_step_add_device(self, user_input: dict[str, Any] | None = None):
         errors: dict[str, str] = {}
@@ -184,22 +183,22 @@ class BlissOptionsFlowHandler(OptionsFlow):
                 int(user_input[CONF_RANGE_MAX]),
             )
             try:
-                await client.ensure_connected()
+                await client.refresh_status()
                 await client.disconnect()
             except Exception:
                 errors["base"] = "cannot_connect"
 
             if not errors:
-                new_data = {CONF_DEVICES: dict(self.config_entry.data.get(CONF_DEVICES, {}))}
+                new_data = {CONF_DEVICES: dict(self._config_entry.data.get(CONF_DEVICES, {}))}
                 device_data = dict(user_input)
                 device_data[CONF_MAC] = formatted_mac
                 new_data[CONF_DEVICES][formatted_mac] = device_data
 
                 self.hass.config_entries.async_update_entry(
-                    self.config_entry, data=new_data
+                    self._config_entry, data=new_data
                 )
                 self.hass.config_entries._async_schedule_save()
-                await self.hass.config_entries.async_reload(self.config_entry.entry_id)
+                await self.hass.config_entries.async_reload(self._config_entry.entry_id)
 
                 return self.async_abort(
                     reason="add_success",
@@ -217,13 +216,13 @@ class BlissOptionsFlowHandler(OptionsFlow):
         if user_input is not None:
             self.selected_device = user_input[SELECTED_DEVICE]
             self.device_data = dict(
-                self.config_entry.data.get(CONF_DEVICES, {})[self.selected_device]
+                self._config_entry.data.get(CONF_DEVICES, {})[self.selected_device]
             )
             return await self.async_step_edit_device()
 
         devices = {
             mac: data[CONF_NAME]
-            for mac, data in self.config_entry.data.get(CONF_DEVICES, {}).items()
+            for mac, data in self._config_entry.data.get(CONF_DEVICES, {}).items()
         }
         return self.async_show_form(
             step_id="select_edit_device",
@@ -233,17 +232,17 @@ class BlissOptionsFlowHandler(OptionsFlow):
     async def async_step_edit_device(self, user_input: dict[str, Any] | None = None):
         errors: dict[str, str] = {}
         if user_input is not None and self.selected_device is not None:
-            new_data = {CONF_DEVICES: dict(self.config_entry.data.get(CONF_DEVICES, {}))}
+            new_data = {CONF_DEVICES: dict(self._config_entry.data.get(CONF_DEVICES, {}))}
             entry = new_data[CONF_DEVICES][self.selected_device]
             entry[CONF_NAME] = user_input[CONF_NAME]
             entry[CONF_PASSWORD] = user_input[CONF_PASSWORD]
             entry[CONF_RANGE_MAX] = int(user_input[CONF_RANGE_MAX])
 
             self.hass.config_entries.async_update_entry(
-                self.config_entry, data=new_data
+                self._config_entry, data=new_data
             )
             self.hass.config_entries._async_schedule_save()
-            await self.hass.config_entries.async_reload(self.config_entry.entry_id)
+            await self.hass.config_entries.async_reload(self._config_entry.entry_id)
 
             return self.async_abort(
                 reason="edit_success",
@@ -262,12 +261,12 @@ class BlissOptionsFlowHandler(OptionsFlow):
     ) -> FlowResult:
         if user_input is not None:
             mac = user_input[SELECTED_DEVICE]
-            devices = {CONF_DEVICES: dict(self.config_entry.data.get(CONF_DEVICES, {}))}
+            devices = {CONF_DEVICES: dict(self._config_entry.data.get(CONF_DEVICES, {}))}
             device_name = devices[CONF_DEVICES][mac][CONF_NAME]
             devices[CONF_DEVICES].pop(mac)
 
             self.hass.config_entries.async_update_entry(
-                self.config_entry, data=devices
+                self._config_entry, data=devices
             )
             self.hass.config_entries._async_schedule_save()
             await self._async_remove_device(mac)
@@ -279,7 +278,7 @@ class BlissOptionsFlowHandler(OptionsFlow):
 
         devices = {
             mac: data[CONF_NAME]
-            for mac, data in self.config_entry.data.get(CONF_DEVICES, {}).items()
+            for mac, data in self._config_entry.data.get(CONF_DEVICES, {}).items()
         }
         return self.async_show_form(
             step_id="remove_device",
